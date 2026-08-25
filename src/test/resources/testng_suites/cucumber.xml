@@ -2,6 +2,7 @@
 <suite name="SauceDemo Cucumber Suite" verbose="1">
     <test name="Web UI and DB Tests">
         <classes>
+            <class name="ua.solvd.cucumber.runner.CucumberWebRunnerTest"/>
         </classes>
     </test>
 </suite>
