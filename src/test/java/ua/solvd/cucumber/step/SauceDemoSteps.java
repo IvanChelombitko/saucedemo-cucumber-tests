@@ -19,13 +19,10 @@ import java.util.List;
 public class SauceDemoSteps implements IDriverPool, ICustomTypePageFactory {
     private User currentUser;
     private List<UserOrder> userOrders;
-    private LoginPageBase loginPageBase;
-    private ProductsPageBase productsPageBase;
-    private CheckoutCompletePageBase checkoutCompletePageBase;
 
     @Given("I am on the SauceDemo login page")
     public void iAmOnTheSauceDemoLoginPage() {
-        loginPageBase = initPage(getDriver(), LoginPageBase.class);
+        LoginPageBase loginPageBase = initPage(getDriver(), LoginPageBase.class);
         loginPageBase.open();
         Assert.assertTrue(loginPageBase.isPageOpened(), "Login page is not opened.");
     }
@@ -40,12 +37,14 @@ public class SauceDemoSteps implements IDriverPool, ICustomTypePageFactory {
             userOrders = orderMapper.getOrdersByUserId(currentUser.getId());
             Assert.assertFalse(userOrders.isEmpty(), "No orders found for user: " + username);
         }
-        productsPageBase = loginPageBase.login(currentUser.getUsername(), currentUser.getPassword());
+        LoginPageBase loginPageBase = initPage(getDriver(), LoginPageBase.class);
+        ProductsPageBase productsPageBase = loginPageBase.login(currentUser.getUsername(), currentUser.getPassword());
         Assert.assertTrue(productsPageBase.isPageOpened(), "Products page is not opened after login.");
     }
 
     @When("I add all my stored orders to the cart")
     public void iAddAllMyStoredOrdersToTheCart() {
+        ProductsPageBase productsPageBase = initPage(getDriver(), ProductsPageBase.class);
         userOrders.stream()
                 .map(UserOrder::getItemName)
                 .forEach(productsPageBase::addItemToCart);
@@ -53,17 +52,19 @@ public class SauceDemoSteps implements IDriverPool, ICustomTypePageFactory {
 
     @When("I proceed to checkout using my profile details")
     public void iProceedToCheckoutUsingMyProfileDetails() {
+        ProductsPageBase productsPageBase = initPage(getDriver(), ProductsPageBase.class);
         CartPageBase cartPageBase = productsPageBase.openCart();
         Assert.assertTrue(cartPageBase.isPageOpened(), "Cart page is not opened.");
         CheckoutInfoPageBase checkoutInfoPageBase = cartPageBase.proceedToCheckout();
         Assert.assertTrue(checkoutInfoPageBase.isPageOpened(), "Checkout Information page is not opened.");
         CheckoutOverviewPageBase checkoutOverviewPageBase = checkoutInfoPageBase.fillInformationAndContinue(currentUser);
         Assert.assertTrue(checkoutOverviewPageBase.isPageOpened(), "Checkout Overview page is not opened.");
-        checkoutCompletePageBase = checkoutOverviewPageBase.finishCheckout();
+        checkoutOverviewPageBase.finishCheckout();
     }
 
     @Then("I should see the successful order completion message")
     public void iShouldSeeTheSuccessfulOrderCompletionMessage() {
+        CheckoutCompletePageBase checkoutCompletePageBase = initPage(getDriver(), CheckoutCompletePageBase.class);
         Assert.assertTrue(checkoutCompletePageBase.isPageOpened(), "Checkout Complete page is not opened.");
         Assert.assertTrue(checkoutCompletePageBase.isOrderSuccessful(), "Order was not successful.");
     }
