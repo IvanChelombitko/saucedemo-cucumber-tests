@@ -8,7 +8,7 @@
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
                 <property name="url"
-                          value="jdbc:mysql://${db.host}:${db.port}/${db.dbName}?useSSL=false&amp;serverTimezone=UTC"/>
+                          value="jdbc:mysql://${db.host}:${db.port}/${db.dbName}?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;serverTimezone=UTC"/>
                 <property name="username" value="${db.user}"/>
                 <property name="password" value="${db.password}"/>
             </dataSource>
@@ -16,5 +16,6 @@
     </environments>
     <mappers>
         <mapper class="ua.solvd.cucumber.dao.IUserMapper"/>
+        <mapper class="ua.solvd.cucumber.dao.IUserOrderMapper"/>
     </mappers>
 </configuration>
